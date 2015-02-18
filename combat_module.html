@@ -18,11 +18,11 @@
 		for(var i = 0; i < bAlliesArray.length; i++) {bAlliesArray[i].ally = true;}
 		for(var i = 0; i < bEnemiesArray.length; i++) {bEnemiesArray[i].enemy = true;}
 		$.extend(obj, Battle.methods)
-		for(var i = 0; i < bAlliesArray.length; i++) {obj.bTurnAllyConstructer(i);}
-		for(var i = 0; i < bEnemiesArray.length; i++) {obj.bTurnEnemyConstructer(i);}
 		for(var i = 0; i < obj.competitorArray.length; i++) {
+			if(obj.competitorArray[i].ally) {obj.bTurnAllyConstructor(i);}
+			else {obj.bTurnEnemyConstructor(i);}
 			obj.bDamagerConstructor(obj.competitorArray[i]);
-			obj.competitorArray[i].bgConLog = obj.bgConLog
+			obj.competitorArray[i].bgConLog = obj.bgConLog;
 		}
 		return obj
 	}
@@ -112,23 +112,24 @@
 				}
 			})
 		},
-		bTurnAllyConstructer : function(bArrayNum) {
+		bTurnAllyConstructor : function(bArrayNum) {
 			var bcEnemiesArray = this.bEnemiesArray;
 			var bcCompetitor = this.competitorArray[bArrayNum];
 			Object.defineProperty(this.competitorArray[bArrayNum], 'trn', {
 				value: function() {
-					bcCompetitor.dmg(bcEnemiesArray[Math.floor(Math.random(bcEnemiesArray.length))], bcCompetitor, bcCompetitor.atk);
+					bcCompetitor.dmg(bcEnemiesArray[Math.floor(Math.random()*bcEnemiesArray.length)], bcCompetitor, bcCompetitor.atk);
 					bcCompetitor.rdy = -1000;
+				
 				}
 			})
 			//return this.competitorArray[bArrayNum].trn;
 		},
-		bTurnEnemyConstructer : function(bArrayNum) {
-			var bcAlliesArray = this.bEnemiesArray;
+		bTurnEnemyConstructor : function(bArrayNum) {
+			var bcAlliesArray = this.bAlliesArray;
 			var bcCompetitor = this.competitorArray[bArrayNum];			
 			Object.defineProperty(this.competitorArray[bArrayNum], 'trn', {
 				value: function() {
-					bcCompetitor.dmg(bcAlliesArray[Math.floor(Math.random(bcAlliesArray.length))], bcCompetitor, bcCompetitor.atk);
+					bcCompetitor.dmg(bcAlliesArray[Math.floor(Math.random()*bcAlliesArray.length)], bcCompetitor, bcCompetitor.atk);
 					bcCompetitor.rdy = -1000;
 				}
 			})
@@ -143,6 +144,7 @@
 
 	//Superclass for both ally and enemy participants
 
+	var placeHolder = function() {return "you should never see this"}
 
 	var UnitCompetitor = function(obj, uname, mhp, atk, spd, def) {
 		obj.uname = uname;
@@ -155,9 +157,9 @@
 		obj.rdy = -1000;
 		obj.act = 0;
 		obj.ugo = false;
-		obj.trn = 'Place Holder';//Might be unnecessary.
-		obj.dmg = 'Place Holder';
-		obj.bgConLog = 'Place Holder';
+		obj.trn = placeHolder;//Might be unnecessary.
+		obj.dmg = placeHolder;
+		obj.bgConLog = placeHolder;
 		$.extend(obj, UnitCompetitor.methods);
 		return obj
 	}
@@ -174,8 +176,10 @@
 				for (var i = 0; i < this.dots.length; i++) {
 					this.dots[i].fx(timeValue);
 				}
-			if(this.rdy >= this.act) {this.trn;}//how can I get this function to reference the Battle Object???  What if battle assigns the property's attribute?
 			}
+			if(this.rdy >= this.act) {
+				this.trn();
+			}//how can I get this function to reference the Battle Object???  What if battle assigns the property's attribute?
 		}
 		// ,
 		// turn : function() {
@@ -193,7 +197,6 @@
 		// uTestThis : function() {
 		// 	return this
 		// }
-
 	}
 
 	
