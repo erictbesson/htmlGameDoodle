@@ -22,8 +22,9 @@ var Battle = function (obj, bAlliesArray, bEnemiesArray) {
         } else {
             obj.bTurnEnemyConstructor(i);
         }
+        obj.bgConLogConstructor(obj.competitorArray[i]);
         obj.bDamagerConstructor(obj.competitorArray[i]);
-        obj.competitorArray[i].bgConLog = obj.bgConLog;
+        //obj.competitorArray[i].bgConLog = obj.bgConLog;
     }
     return obj
 }
@@ -86,7 +87,9 @@ Battle.methods = {
         this.bTeamStatsInit(this.bEnemiesArray, "bEnemiesStats");
         this.bTeamStatsUpdate(this.bAlliesArray);
         this.bTeamStatsUpdate(this.bEnemiesArray);
+        document.getElementById('b_html_combat_history').innerHTML = "<h3>Combat History Log</h3>"
         this.mainLoop(this.competitorArray);
+
     },
     bTeamStatsInit: function (competitorArray, docTeamId) {
         var bcuri = 0;
@@ -107,14 +110,27 @@ Battle.methods = {
         }
     },
     bgConLog: function (bConLogText) {
-        console.log("[" + this.bTime.toString() + "] " + bConLogText)
+        var conLogUpdate = "[" + this.bTime.toString() + "] " + bConLogText;
+        console.log(conLogUpdate);
+        var conLogInterim = document.getElementById('b_html_combat_history').innerHTML;
+        document.getElementById('b_html_combat_history').innerHTML = conLogInterim+"<br>"+conLogUpdate;
         //Add code to add bConLogText to the html itself
+    },
+    bgConLogConstructor: function (bagent) {
+        Object.defineProperty(bagent, 'bConLog', {
+            value: function (bConLogText) {
+                var conLogUpdate = "[" + this.bTime.toString() + "] " + bConLogText;
+                console.log(conLogUpdate);
+                var conLogInterim = document.getElementById('b_html_combat_history').innerHTML;
+                document.getElementById('b_html_combat_history').innerHTML = conLogInterim+"<br>"+conLogUpdate;
+            }
+        })
     },
     bDamagerConstructor: function (bagent) {
         Object.defineProperty(bagent, 'dmg', {
             value: function (btarget, bagent, bvalue) {
                 btarget.hp = btarget.hp - bvalue;
-                this.bgConLog(bagent.uname + " hit " + btarget.uname + " for " + bvalue + " hp.");
+                bagent.bConLog(bagent.uname + " hit " + btarget.uname + " for " + bvalue + " hp.");
                 //other stuff for triggered events?
             }
         })
@@ -168,7 +184,7 @@ var UnitCompetitor = function (obj, uname, mhp, atk, spd, def) {
     obj.ugo = false;
     obj.trn = placeHolder; //Might be unnecessary.
     obj.dmg = placeHolder;
-    obj.bgConLog = placeHolder;
+    obj.bConLog = placeHolder;
     $.extend(obj, UnitCompetitor.methods);
     return obj
 }
