@@ -20,7 +20,10 @@
 		$.extend(obj, Battle.methods)
 		for(var i = 0; i < bAlliesArray.length; i++) {obj.bTurnAllyConstructer(i);}
 		for(var i = 0; i < bEnemiesArray.length; i++) {obj.bTurnEnemyConstructer(i);}
-		for(var i = 0; i < competitorArray.length; i++) {obj.bdamagerConstructer(i);}
+		for(var i = 0; i < competitorArray.length; i++) {
+			obj.bDamagerConstructer(i);
+			obj.competitorArray[i].bgConLog = obj.bgConLog
+		}
 		return obj
 	}
 
@@ -100,7 +103,7 @@
 			console.log("["+this.bTime.toString()+"] "+bConLogText)
 			//Add code to add bConLogText to the html itself
 		},
-		damagerConstructor : function(bagent) {
+		bDamagerConstructor : function(bagent) {
 			Object.defineProperty(bagent, 'dmg', {
 				value : function(btarget, bagent, bvalue) {
 					btarget.hp = btarget.hp - bvalue;
