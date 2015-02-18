@@ -21,7 +21,7 @@
 		for(var i = 0; i < bAlliesArray.length; i++) {obj.bTurnAllyConstructer(i);}
 		for(var i = 0; i < bEnemiesArray.length; i++) {obj.bTurnEnemyConstructer(i);}
 		for(var i = 0; i < obj.competitorArray.length; i++) {
-			obj.bDamagerConstructer(i);
+			obj.bDamagerConstructor(obj.competitorArray[i]);
 			obj.competitorArray[i].bgConLog = obj.bgConLog
 		}
 		return obj
@@ -50,7 +50,7 @@
 				return true;
 			}
 			if(this.enemies(competitorArray).length === 0) {
-				console.log("Victory!");
+				console.log("Victory!", "Time: "+this.bTime);
 				return true;
 			}
 			//console.log("the fight continues");
@@ -156,6 +156,8 @@
 		obj.act = 0;
 		obj.ugo = false;
 		obj.trn = 'Place Holder';//Might be unnecessary.
+		obj.dmg = 'Place Holder';
+		obj.bgConLog = 'Place Holder';
 		$.extend(obj, UnitCompetitor.methods);
 		return obj
 	}
@@ -164,6 +166,7 @@
 		//still editing timestep
 		timestep : function(timeValue) {
 			if(timeValue === undefined) {timeValue = 0}
+			this.bTime = timeValue
 			if(this.rdy <= 0) {this.rdy = this.rdy + this.spd;}
 			if(this.rdy > 0) {this.rdy = this.rdy + 10 + Math.pow(this.spd, 1/3)}
 			//console.log(this.uname+" is "+this.rdy.toString()+" ready at "+timeValue.toString())
