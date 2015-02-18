@@ -20,6 +20,7 @@
 		$.extend(obj, Battle.methods)
 		for(var i = 0; i < bAlliesArray.length; i++) {obj.bTurnAllyConstructer(i);}
 		for(var i = 0; i < bEnemiesArray.length; i++) {obj.bTurnEnemyConstructer(i);}
+		for(var i = 0; i < competitorArray.length; i++) {obj.bdamagerConstructer(i);}
 		return obj
 	}
 
@@ -99,17 +100,21 @@
 			console.log("["+this.bTime.toString()+"] "+bConLogText)
 			//Add code to add bConLogText to the html itself
 		},
-		damager : function(btarget, bagent, bvalue) {
-			btarget.hp = btarget.hp - bvalue;
-			this.bgConLog(bagent.uname+" hit "+btarget.uname+" for "+bvalue+" hp." );
-			//other stuff for triggered events?
+		damagerConstructor : function(bagent) {
+			Object.defineProperty(bagent, 'dmg', {
+				value : function(btarget, bagent, bvalue) {
+					btarget.hp = btarget.hp - bvalue;
+					this.bgConLog(bagent.uname+" hit "+btarget.uname+" for "+bvalue+" hp." );
+					//other stuff for triggered events?
+				}
+			})
 		},
 		bTurnAllyConstructer : function(bArrayNum) {
 			var bcEnemiesArray = this.bEnemiesArray;
 			var bcCompetitor = this.competitorArray[bArrayNum];
 			Object.defineProperty(this.competitorArray[bArrayNum], 'trn', {
 				value: function() {
-					this.damager(this.bEnemiesArray[Math.floor(Math.random(bcEnemiesArray.length))], bcCompetitor, bcCompetitor.atk);
+					bcCompetitor.dmg(bcEnemiesArray[Math.floor(Math.random(bcEnemiesArray.length))], bcCompetitor, bcCompetitor.atk);
 					bcCompetitor.rdy = -1000;
 				}
 			})
@@ -120,7 +125,7 @@
 			var bcCompetitor = this.competitorArray[bArrayNum];			
 			Object.defineProperty(this.competitorArray[bArrayNum], 'trn', {
 				value: function() {
-					this.damager(bcAlliesArray[Math.floor(Math.random(bcAlliesArray.length))], bcCompetitor, bcCompetitor.atk);
+					bcCompetitor.dmg(bcAlliesArray[Math.floor(Math.random(bcAlliesArray.length))], bcCompetitor, bcCompetitor.atk);
 					bcCompetitor.rdy = -1000;
 				}
 			})
