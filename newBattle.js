@@ -50,11 +50,11 @@ Battle.methods = {
     },
     victoryCheck: function (competitorArray) {
         if (this.allies(competitorArray).length === 0) {
-            console.log("Defeat!");
+            this.bgConLog("Defeat!");
             return true;
         }
         if (this.enemies(competitorArray).length === 0) {
-            console.log("Victory!", "Time: " + this.bTime);
+            this.bgConLog("Victory!");
             return true;
         }
         //console.log("the fight continues");
@@ -105,7 +105,7 @@ Battle.methods = {
     bTeamStatsUpdate: function (competitorArray) {
         var bcuri = 0;
         while (bcuri < competitorArray.length) {
-            document.getElementById(competitorArray[bcuri].htmlname + bcuri.toString()).innerHTML = "<p>" + competitorArray[bcuri].uname + "</p>" + "<p>HP: " + competitorArray[bcuri].hp + "</p>" + "<p> Readiness: " + competitorArray[bcuri].rdy + "</p>" + "</div>";
+            document.getElementById(competitorArray[bcuri].htmlname + bcuri.toString()).innerHTML = "<p>" + competitorArray[bcuri].uname + "</p>" + "<p>HP: " + competitorArray[bcuri].hp + "/" + competitorArray[bcuri].mhp + " | " + competitorArray[bcuri].rdy + " Ready</p>" + "</div>";
             bcuri++;
         }
     },
@@ -139,6 +139,7 @@ Battle.methods = {
         var bcEnemiesArray = this.bEnemiesArray;
         var bcCompetitor = this.competitorArray[bArrayNum];
         Object.defineProperty(this.competitorArray[bArrayNum], 'trn', {
+
             value: function () {
                 bcCompetitor.dmg(bcEnemiesArray[Math.floor(Math.random() * bcEnemiesArray.length)], bcCompetitor, bcCompetitor.atk);
                 bcCompetitor.rdy = -1000;
@@ -157,6 +158,14 @@ Battle.methods = {
             }
         })
         //return this.competitorArray[bArrayNum].trn;
+    },
+    bAllyTurnChoice: function(bArrayNum) {
+        var bcEnemiesArray = this.bEnemiesArray;
+        var bcCompetitor = this.competitorArray[bArrayNum];
+        document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML = document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML+"<div class=battack_option id="+bcCompetitor.htmlname + bArrayNum.toString()+"_battack_option onclick='this.battackChoice()'><u>A</u>ttack</div>";
+    },
+    battackChoice: function() {
+        console.log("wham!!!")
     }
 }
 
@@ -185,6 +194,7 @@ var UnitCompetitor = function (obj, uname, mhp, atk, spd, def) {
     obj.trn = placeHolder; //Might be unnecessary.
     obj.dmg = placeHolder;
     obj.bConLog = placeHolder;
+    obj.atkAct = placeHolder;
     $.extend(obj, UnitCompetitor.methods);
     return obj
 }
@@ -286,5 +296,9 @@ var fBattle = Battle({}, heroine, shero)
 var twBattle = Battle({}, [hero, heroine], shero)
     // var battleInit = function() {
 
+var bBattlePicker = function(paraBattle) {
+    document.getElementById("bbattle_picker").innerHTML = "";
+    paraBattle.binit();
+}
 
 // }

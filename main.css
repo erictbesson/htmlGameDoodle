@@ -6,6 +6,24 @@ body {/*font-family: indie-flower, cursive;* define with link to google fonts/}
 
 }
 
+
+#b_html_combat_history {
+	overflow-y: auto;
+	max-height: 200px;
+	background-color: gray; 
+}
+
+.battack_option {
+	width: 33%;
+	margin-left: 33%;
+	position: relative;
+	border-color: red;
+	border: 2px solid red;
+	border-radius: 10px;
+	color: red;
+	margin-top: -125px;
+}
+
 hr {color: #747704;}
 	/*Can't get the horizontal line's color to be change*/
 
