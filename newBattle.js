@@ -24,6 +24,7 @@ var Battle = function (obj, bAlliesArray, bEnemiesArray) {
 		}
 		obj.bgConLogConstructor(obj.competitorArray[i]);
 		obj.bDamagerConstructor(obj.competitorArray[i]);
+		obj.bAttackChoiceConstructor(i);
 		obj.competitorArray[i].pos = i;
 
 		//obj.competitorArray[i].bgConLog = obj.bgConLog;
@@ -40,6 +41,7 @@ Battle.methods = {
 		}
 		for (var i = 0; i < this.competitorArray.length; i++) {
 			this.competitorArray[i].timestep(this.bTime);
+			//Needs functionality for ally turns.
 		} //temporary early break stuff
 		this.bTeamStatsUpdate(this.bAlliesArray);
 		this.bTeamStatsUpdate(this.bEnemiesArray);
@@ -184,17 +186,48 @@ Battle.methods = {
 	bAllyTurnChoice: function(bArrayNum) {
 		var bcEnemiesArray = this.bEnemiesArray;
 		var bcCompetitor = this.competitorArray[bArrayNum];
-		document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML = document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML+"<div class=battack_option id="+bcCompetitor.htmlname + bArrayNum.toString()+"_battack_option onclick='"+this.bAttackChoice()+"'><u>A</u>ttack</div>";
+		//this.bCUpdateLast = document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML;
+		document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML = document.getElementById(bcCompetitor.htmlname + bArrayNum.toString()).innerHTML+"<div class=battack_option id="+bcCompetitor.htmlname + bArrayNum.toString()+"_battack_option><u>A</u>ttack</div>";
 		this.allyActChoice = false;
-
-		//Having Difficulty getting the program to wait and do nothing until it gets a response from the player.
-
-		console.log("went past the loop.")
-		console.log(this.allyActChoice)
+		document.getElementById(bcCompetitor.htmlname+bArrayNum.toString()+"_battack_option").onclick = (
+			function (self) {
+				return function() {
+					self.allyActChoice = bcCompetitor.bAttackChoice();	//run the character's action property.
+					self.bTeamStatsUpdate(self.bAlliesArray);	//update the display, getting rid of attack.
+				}
+			}
+		)(this);
+		
+				//Clear the battle's mainloop?  This presents a slight context issue.  How about have it forward to the mainloop information that will tell the main loop to pause?
+		
 	},
-	bAttackChoice: function() {
-		console.log("wham!!!")
-		this.allyActChoice = "attack"
+	//Currently not using the battle's version of this function.  Need to decide ultimate placement of these things anyway.  Probably should write a constructor.
+	bAttackChoiceConstructor: function (bArrayNum) {
+		Object.defineProperty(this.competitorArray[bArrayNum], 'bAttackChoice', {
+			value: function () {
+				console.log("wham!!! Attack choice made");
+				this.allyActChoice = "attack";
+				//Do more stuff like actual damage.
+				return this.allyActChoice;
+			}
+		})
+
+		//document.getElementById(this.competitorArray[bArrayNum].htmlname + bArrayNum.toString()).innerHTML = this.bCUpdateLast;//This code worked when I typed it into the console manually.  Or when I ran code on its own.  Why does the wham part work and auto-play???
+	},
+	//I don't think I need this waiter if I just add move the code/commands to the onclick function instead.
+	bAllyTurnChoiceWaiter: function(bArrayNum) {
+		this.bWaitInterval = setInterval(
+			(function(self) {         //Self-executing func which takes 'this' as self
+				return function() {   //Return a function in the context of 'self'
+					if (self.allyActChoice) {
+						clearInterval(self.bWaitInterval);
+						console.log("bAllyTurnChoiceWaiter is running");
+						self.bTeamStatsUpdate(this.bAlliesArray);
+					}
+				}
+			})(this),
+			10     //normal interval, 'this' scope not impacted here.
+		);
 	}
 	
 }
@@ -225,6 +258,7 @@ var UnitCompetitor = function (obj, uname, mhp, atk, spd, def) {
 	obj.dmg = placeHolder;
 	obj.bConLog = placeHolder;
 	obj.atkAct = placeHolder;
+	obj.bAttackChoice = placeHolder;
 	$.extend(obj, UnitCompetitor.methods);
 	return obj
 }
